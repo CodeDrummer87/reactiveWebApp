@@ -3,6 +3,8 @@ package com.example.reactiveWebApp.service;
 import com.example.reactiveWebApp.entity.Notification;
 import com.example.reactiveWebApp.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -11,6 +13,8 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class NotificationService {
 
+
+    private Integer numberOfEntriesPerPage = 5;
     private final NotificationRepository notificationRepository;
 
     public Mono<Notification> getNotificationById(Integer id) {
@@ -18,22 +22,10 @@ public class NotificationService {
                 .switchIfEmpty(Mono.error(new IllegalStateException("No notification found with id: " + id)));
     }
 
-    public Flux<Notification> findAll() {   // + pagination
-        return notificationRepository.findAll();
+    public Flux<Notification> getPageOfNotifications(int page) {
+        Pageable pageable = PageRequest.of(page, numberOfEntriesPerPage);
+        return notificationRepository.findAllBy(pageable);
     }
-
-    /*
-    public Mono<PageSupport<Entity>> getEntityPage(Pageable page) {
-    return repository.findAll()
-        .collectList()
-        .map(list -> new PageSupport<>(
-            list
-                .stream()
-                .skip(page.getPageNumber() * page.getPageSize())
-                .limit(page.getPageSize())
-                .collect(Collectors.toList()),
-            page.getPageNumber(), page.getPageSize(), list.size()));
-  }*/
 
     public Mono<Notification> save(Notification notification) {
         return notificationRepository.save(notification);

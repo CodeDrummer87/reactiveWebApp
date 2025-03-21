@@ -19,20 +19,10 @@ public class NotificationController {
         return notificationService.getNotificationById(id);
     }
 
-    @GetMapping
-    public Flux<Notification> getAllNotifications() {   //.:: add pagination
-        return notificationService.findAll();
+    @GetMapping("/page/{page}")
+    public Flux<Notification> getPageOfNotifications(@PathVariable Integer page) {
+        return notificationService.getPageOfNotifications(page);
     }
-
-    /*
-    @GetMapping("/entities")
-    public Mono<PageSupport<Entity>> getEntitiesPage(
-      @RequestParam(name = "page", defaultValue = FIRST_PAGE_NUM) int page,
-      @RequestParam(name = "size", defaultValue = DEFAULT_PAGE_SIZE) int size
-  ) {
-
-    return service.getEntityPage(PageRequest.of(page, size));
-  }*/
 
     @PostMapping
     public Mono<Notification> createNotification(@RequestBody Notification notification) {
